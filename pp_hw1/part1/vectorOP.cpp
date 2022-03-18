@@ -97,10 +97,24 @@ float arraySumVector(float *values, int N)
   //
   // PP STUDENTS TODO: Implement your vectorized version of arraySumSerial here
   //
+  __pp_vec_float x;
+  __pp_vec_float sum = _pp_vset_float(0.f);
+  __pp_vec_float zeros = _pp_vset_float(0.f);
+  __pp_vec_float ones = _pp_vset_float(1.f);
+  __pp_mask maskAll = _pp_init_ones();
 
   for (int i = 0; i < N; i += VECTOR_WIDTH)
   {
+    // load value
+    _pp_vload_float(x, values + i, maskAll);
+    // add into sum
+    _pp_vadd_float(sum, sum, x, maskAll);
   }
-
-  return 0.0;
+  for(int cnt = _pp_cntbits(maskAll); cnt > 1;) {
+    _pp_hadd_float(sum, sum);
+    _pp_interleave_float(sum, sum);
+    cnt >>= 1;
+    maskAll = _pp_init_ones(cnt);
+  }
+  return sum.value[0];
 }
