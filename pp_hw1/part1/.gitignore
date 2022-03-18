@@ -1,0 +1,5 @@
+# middle files
+*.o
+
+# execution files
+myexp
