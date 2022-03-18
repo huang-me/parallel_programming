@@ -14,8 +14,11 @@ void absVector(float *values, float *output, int N)
   for (int i = 0; i < N; i += VECTOR_WIDTH)
   {
 
-    // All ones
-    maskAll = _pp_init_ones();
+    // array mask
+    if(i + VECTOR_WIDTH > N)
+      maskAll = _pp_init_ones(N % VECTOR_WIDTH);
+    else
+      maskAll = _pp_init_ones();
 
     // All zeros
     maskIsNegative = _pp_init_ones(0);
@@ -54,18 +57,23 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
   __pp_vec_float maxVal = _pp_vset_float(9.999999f);
   __pp_vec_int exp;
   __pp_vec_int zero = _pp_vset_int(0), one_int = _pp_vset_int(1);
-  __pp_mask maskAll, maskTmp;
+  __pp_mask maskAll, maskTmp, maskExpZero, maskRem;
   for(int i = 0; i < N; i += VECTOR_WIDTH)
   {
-    // All ones
-    maskAll = _pp_init_ones();
+    // array mask
+    if(i + VECTOR_WIDTH > N)
+      maskAll = _pp_init_ones(N % VECTOR_WIDTH);
+    else
+      maskAll = _pp_init_ones();
+
     // load vector of values
     _pp_vload_int(exp, exponents + i, maskAll);
-    // check if exponent is zero
-    _pp_veq_int(maskAll, exp, zero, maskAll);         // if(exp == 0)
-    _pp_vstore_float(output + i, one, maskAll);       // output = 1.f
-    // inverse the mask
-    maskAll = _pp_mask_not(maskAll);                  // mask for else
+    // store value for exp == 0
+    _pp_veq_int(maskExpZero, exp, zero, maskAll);         // if(exp == 0)
+    _pp_vstore_float(output + i, one, maskExpZero);       // output = 1.f
+    // mask for else (nonzero & in range)
+    maskRem = _pp_mask_not(maskExpZero);
+    maskAll = _pp_mask_and(maskAll, maskRem);         
     _pp_vload_float(result, values + i, maskAll);     // result = values
     _pp_vload_float(x, values + i, maskAll);          // x = values
     _pp_vgt_int(maskTmp, exp, one_int, maskAll);      // mask for exponent larger than one
