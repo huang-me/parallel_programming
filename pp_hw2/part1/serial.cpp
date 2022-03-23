@@ -6,6 +6,10 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
+    if(argc != 2) {
+        cerr << "Execute with command \"./serial <number of tosses>\"\n";
+        return -1;
+    }
     int number_in_circle = 0;
     int number_of_tosses = atoi(argv[1]);
     for (int toss = 0; toss < number_of_tosses; toss++) {
