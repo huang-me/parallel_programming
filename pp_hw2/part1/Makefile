@@ -1,16 +1,21 @@
 CXX := clang++
 
-TARGET := serial
+TARGET := serial pi.out
 
-OBJ := serial.o
+OBJ := serial.o parallel_pi.o
 
 CXXFLAGS := -O3 -Wall
+
+all: $(TARGET)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(TARGET): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
+serial: %:%.o
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+pi.out: parallel_pi.o
+	$(CXX) $(CXXFLAGS) $< -o $@ -lpthread 
 
 clean:
-	rm $(TARGET) $(OBJ)
+	rm -f $(TARGET) $(OBJ)
