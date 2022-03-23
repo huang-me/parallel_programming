@@ -53,6 +53,6 @@ int main(int argc, char* argv[]) {
     
     float pi = 4 * (double) res / (double) num_tosses;
 
-    cout << pi << endl;
+    printf("%.6f\n", pi);
     return 0;
 }
