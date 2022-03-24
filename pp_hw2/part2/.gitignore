@@ -2,3 +2,5 @@
 objs/
 # execution file
 mandelbrot
+# output image
+*.ppm
