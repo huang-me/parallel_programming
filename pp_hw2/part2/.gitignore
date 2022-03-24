@@ -1,0 +1,4 @@
+# object files
+objs/
+# execution file
+mandelbrot
