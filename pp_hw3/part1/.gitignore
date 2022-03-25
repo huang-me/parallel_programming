@@ -1,0 +1,7 @@
+# execution files
+cg
+cg_grader
+# object files
+*.o
+# callgrind files
+callgrind.out.*
