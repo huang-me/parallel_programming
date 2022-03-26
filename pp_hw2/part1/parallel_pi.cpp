@@ -2,21 +2,48 @@
 #include <pthread.h>
 #include <random>
 
+
+#define ran \
+    (2.0 - as_double(0x3FF0000000000000ULL | (rand64() >> 12)))
+
 using namespace std;
 
 typedef struct thread_data {
     long long tosses, result;
 } thread_data;
 
+static unsigned long x=123456789, y=362436069, z=521288629;
+
+double as_double(uint64_t i)
+{
+    union
+    {
+        uint64_t i;
+        double f;
+    } pun = { i };
+    return pun.f;
+}
+
+static unsigned long rand64(void) {
+    unsigned long t;
+    x ^= x << 16;
+    x ^= x >> 5;
+    x ^= x << 1;
+
+    t = x;
+    x = y;
+    y = z;
+    z = t ^ x ^ y;
+
+    return z;
+}
+
 void *thread_pi(void *data) {
-    random_device rd;
-    default_random_engine engine(rd());
-    uniform_real_distribution<float> ran(0.0, 1.0);
 
     thread_data *d = (thread_data*) data;
     long long cnt = 0;
     for(int i = 0; i < d->tosses; i++) {
-        double x = ran(engine), y = ran(engine);
+        double x = ran, y = ran;
         double distance = x * x + y * y;
         if(distance <= 1)
             cnt++;
