@@ -1,4 +1,7 @@
+# execution file
 pi.out
 serial
-
+# object files
 *.o
+# callgrind output file
+callgrind.out.*
