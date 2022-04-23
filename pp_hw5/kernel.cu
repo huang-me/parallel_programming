@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-__device__ unsigned long long thdcnt = 0;
-
 __device__ int mandel(float c_re, float c_im, int maxIteration) {
 	float z_re = c_re, z_im = c_im;
     int iter;
@@ -32,7 +30,6 @@ __global__ void mandelKernel(int* img, int x0, int y0, float dx, float dy, int m
 	float x = (float)x0 + j * dx;
 	float y = (float)y0 + i * dy;
 	int index = i * width + j;
-	atomicAdd(&thdcnt, 1);
 	img[index] = mandel(x, y, maxIterations);
 }
 
