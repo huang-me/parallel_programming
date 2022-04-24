@@ -29,7 +29,7 @@ void hostFE(int filterWidth, float *filter, int imageHeight, int imageWidth,
 	clSetKernelArg(kernel, 4, sizeof(int), &imageWidth);
 	clSetKernelArg(kernel, 5, sizeof(int), &imageHeight);
 
-	size_t global[2] = {imageWidth, imageHeight}, local[2] = {1, 1};
+	size_t global[2] = {imageWidth, imageHeight}, local[2] = {8, 8};
 	clEnqueueNDRangeKernel(commands, kernel, 2, NULL, global, local, 0, NULL, NULL);
 
 	clFinish(commands);
