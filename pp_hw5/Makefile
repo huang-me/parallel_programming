@@ -12,6 +12,11 @@ CUDA_COMPILE_FLAGS = --device-c -gencode=arch=compute_61,code=sm_61 -Xcompiler '
 PPM_CXX=$(COMMONDIR)/ppm.cpp
 PPM_OBJ=$(addprefix $(OBJDIR)/, $(subst $(COMMONDIR)/,, $(PPM_CXX:.cpp=.o)))
 
+KERNEL_FILE=kernel
+ifdef KERNEL
+	KERNEL_FILE=kernel$(KERNEL)
+endif
+
 
 default: $(APP_NAME)
 
@@ -23,7 +28,7 @@ dirs:
 clean:
 		/bin/rm -rf $(OBJDIR) *.ppm *~ $(APP_NAME)
 
-OBJS=$(OBJDIR)/main.o $(OBJDIR)/kernel.o $(OBJDIR)/mandelbrotSerial.o $(OBJDIR)/mandelbrotThread.o $(PPM_OBJ)
+OBJS=$(OBJDIR)/main.o $(OBJDIR)/$(KERNEL_FILE).o $(OBJDIR)/mandelbrotSerial.o $(OBJDIR)/mandelbrotThread.o $(PPM_OBJ)
 
 $(APP_NAME): dirs $(OBJS)
 		$(NVCC) ${CUDA_LINK_FLAGS} -o $@ $(OBJS) mandelbrotThreadRef.a
@@ -36,5 +41,8 @@ $(OBJDIR)/%.o: $(COMMONDIR)/%.cpp
 
 $(OBJDIR)/main.o: $(COMMONDIR)/CycleTimer.h kernel.h
 
-$(OBJDIR)/kernel.o : kernel.cu kernel.h
-	${NVCC} ${CUDA_COMPILE_FLAGS} -c kernel.cu -o $@
+$(OBJDIR)/$(KERNEL_FILE).o : $(KERNEL_FILE).cu kernel.h
+	${NVCC} ${CUDA_COMPILE_FLAGS} -c $(KERNEL_FILE).cu -o $@
+
+run: $(APP_NAME)
+	./$(APP_NAME)
